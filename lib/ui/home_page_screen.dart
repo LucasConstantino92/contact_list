@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:contact_list/helpers/contact_helper.dart';
+import 'package:contact_list/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePageScreen extends StatefulWidget {
@@ -37,7 +38,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
         backgroundColor: Colors.teal,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ContactPage(),
+          ),
+        ),
         backgroundColor: Colors.teal,
         child: const Icon(
           Icons.add_outlined,
@@ -56,6 +62,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget _contactCard(BuildContext context, int index) {
     return GestureDetector(
+      onTap: () => _showContactPage(contact: contacts[index]),
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(8),
@@ -67,9 +74,12 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   image: DecorationImage(
-                    image: contacts[index].img != null
-                        ? FileImage(File(contacts[index].img))
-                        : AssetImage('images/person.png'),
+                    image: contacts[index].img != null &&
+                            contacts[index].img.isNotEmpty
+                        ? FileImage(
+                            File(contacts[index].img),
+                          )
+                        : AssetImage('images/person.png') as ImageProvider,
                   ),
                 ),
               ),
@@ -100,6 +110,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _showContactPage({Contact? contact}) async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ContactPage(contact: contact),
       ),
     );
   }

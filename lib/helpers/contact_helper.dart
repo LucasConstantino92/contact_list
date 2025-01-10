@@ -15,14 +15,14 @@ class ContactHelper {
 
   ContactHelper.internal();
 
-  late Database _db;
+  Database? _db;
 
   Future<Database> get db async {
     if (_db != null) {
-      return _db;
+      return _db!;
     } else {
       _db = await initDb();
-      return _db;
+      return _db!;
     }
   }
 
@@ -100,6 +100,8 @@ class Contact {
   String email = '';
   String phone = '';
   String img = '';
+
+  Contact();
 
   Contact.fromMap(Map map) {
     id = map[idColumn];
