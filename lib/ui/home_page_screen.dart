@@ -18,12 +18,8 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   @override
   void initState() {
-    helper.getAllContacts().then((list) {
-      setState(() {
-        contacts = List<Contact>.from(list);
-      });
-    });
     super.initState();
+    _getAllContacts();
   }
 
   @override
@@ -38,12 +34,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         backgroundColor: Colors.teal,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ContactPage(),
-          ),
-        ),
+        onPressed: () => _showContactPage(),
         backgroundColor: Colors.teal,
         child: const Icon(
           Icons.add_outlined,
@@ -115,11 +106,27 @@ class _HomePageScreenState extends State<HomePageScreen> {
   }
 
   void _showContactPage({Contact? contact}) async {
-    Navigator.push(
+    final recContact = await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ContactPage(contact: contact),
       ),
     );
+    if (recContact != null) {
+      if (contact != null) {
+        await helper.updateContact(recContact);
+      } else {
+        await helper.saveContact(recContact);
+      }
+      _getAllContacts();
+    }
+  }
+
+  void _getAllContacts() {
+    helper.getAllContacts().then((list) {
+      setState(() {
+        contacts = List<Contact>.from(list);
+      });
+    });
   }
 }
