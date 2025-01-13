@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:contact_list/helpers/contact_helper.dart';
 import 'package:contact_list/ui/contact_page.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
@@ -53,7 +54,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
 
   Widget _contactCard(BuildContext context, int index) {
     return GestureDetector(
-      onTap: () => _showContactPage(contact: contacts[index]),
+      onTap: () => _showOptions(context, index),
       child: Card(
         child: Padding(
           padding: EdgeInsets.all(8),
@@ -76,6 +77,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
               ),
               SizedBox(width: 8),
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     contacts[index].name ?? '',
@@ -103,6 +105,59 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ),
       ),
     );
+  }
+
+  void _showOptions(BuildContext context, int index) {
+    showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return BottomSheet(
+            builder: (context) {
+              return Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        launch("tel:${contacts[index].phone}");
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Ligar',
+                        style: TextStyle(color: Colors.red, fontSize: 20),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showContactPage(contact: contacts[index]);
+                      },
+                      child: Text(
+                        'Editar',
+                        style: TextStyle(color: Colors.red, fontSize: 20),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        helper.deleContact(contacts[index].id!);
+                        setState(() {
+                          contacts.removeAt(index);
+                          Navigator.pop(context);
+                        });
+                      },
+                      child: Text(
+                        'Excluir',
+                        style: TextStyle(color: Colors.red, fontSize: 20),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+            onClosing: () {},
+          );
+        });
   }
 
   void _showContactPage({Contact? contact}) async {
