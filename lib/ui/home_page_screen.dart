@@ -5,6 +5,8 @@ import 'package:contact_list/ui/contact_page.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+enum OrderOptions { orderaz, orderza }
+
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({super.key});
 
@@ -33,6 +35,23 @@ class _HomePageScreenState extends State<HomePageScreen> {
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,
+        actions: [
+          PopupMenuButton(
+            itemBuilder: (context) {
+              return <PopupMenuEntry<OrderOptions>>[
+                PopupMenuItem<OrderOptions>(
+                  value: OrderOptions.orderaz,
+                  child: Text('Ordenar de A - Z'),
+                ),
+                PopupMenuItem<OrderOptions>(
+                  value: OrderOptions.orderza,
+                  child: Text('Ordenar de Z - A'),
+                ),
+              ];
+            },
+            onSelected: _orderList,
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showContactPage(),
@@ -183,5 +202,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
         contacts = List<Contact>.from(list);
       });
     });
+  }
+
+  void _orderList(OrderOptions result) {
+    switch (result) {
+      case OrderOptions.orderaz:
+        contacts.sort((a, b) {
+          return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+        });
+        break;
+      case OrderOptions.orderza:
+        contacts.sort((a, b) {
+          return b.name.toLowerCase().compareTo(a.name.toLowerCase());
+        });
+        break;
+    }
+    setState(() {});
   }
 }
